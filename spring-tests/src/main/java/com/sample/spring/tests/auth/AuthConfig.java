@@ -1,6 +1,6 @@
-package com.sample.spring.security.auth;
+package com.sample.spring.tests.auth;
 
-import com.sample.spring.security.services.JwtService;
+import com.sample.spring.tests.services.JwtService;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
