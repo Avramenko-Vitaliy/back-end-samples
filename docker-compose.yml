@@ -1,0 +1,43 @@
+version: '2'
+services:
+  kafka:
+    image: johnnypark/kafka-zookeeper
+    environment:
+      - ADVERTISED_PORT=9092
+
+  postgres:
+    image: sameersbn/postgresql:9.6-2
+    command: '-N 500'
+    ports:
+      - "5433:5432"
+    environment:
+      - DEBUG=false
+      - PG_TRUST_LOCALNET=true
+      - PG_PASSWORD=secret
+      - DB_NAME=simple-back-end, simple-logs
+
+  spring-kafka:
+    image: sample/spring-kafka
+    environment:
+      - JVM_MEMORY_OPTS=-Dspring.datasource.url=jdbc:postgresql://postgres:5432/simple-back-end -Dspring.datasource.username=postgres -Dspring.datasource.password=secret
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    links:
+      - "postgres:postgres"
+      - "kafka:kafka"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - kafka
+
+  spring-kafka-logs:
+    image: sample/spring-kafka-logs
+    environment:
+      - JVM_MEMORY_OPTS=-Dspring.datasource.url=jdbc:postgresql://postgres:5432/simple-logs  -Dspring.datasource.username=postgres -Dspring.datasource.password=secret
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    links:
+      - "postgres:postgres"
+      - "kafka:kafka"
+    depends_on:
+      - postgres
+      - kafka
